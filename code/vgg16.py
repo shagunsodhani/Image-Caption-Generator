@@ -16,11 +16,17 @@ def load_vgg16():
     return model
 
 
-if __name__ == "__main__":
-    model = load_vgg16()
-    img_path = 'elephant.jpg'
-    img = image.load_img(img_path, target_size=(224, 224))
+def load_image(path):
+    '''Method to load the image'''
+    img = image.load_img(path, target_size=(224, 224))
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
+    return np.asarray(x)
+
+
+if __name__ == "__main__":
+    model = load_vgg16()
+    img_path = 'elephant.jpg'
+    x = load_image(img_path)
     print(model.predict(x))
