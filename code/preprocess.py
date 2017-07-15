@@ -13,26 +13,35 @@ END = " __END__"
 def encode_image(model, image,
                  data_dir="/home/shagun/projects/Image-Caption-Generator/data/"):
     '''Method to encode the given image'''
-    image_dir = data_dir + "images_small/"
+    image_dir = data_dir + "images/"
     prediction = model.predict(
         load_image(image_dir + str(image))
     )
     return np.reshape(prediction, prediction.shape[1])
 
 
-def read_captions(data_dir="/home/shagun/projects/Image-Caption-Generator/data/"):
+def read_captions(data_dir="/home/shagun/projects/Image-Caption-Generator/data/",
+                  mode="all"):
     '''Method to read the captions from the text file'''
-    with open(data_dir + 'annotations/Flickr8k.token.txt') as caption_file:
+    with open(data_dir + "annotations/Flickr8k.token.txt") as caption_file:
         image_caption_dict = {}
         captions = map(lambda x: x.strip(),
                        caption_file.read().split('\n'))
         for caption in captions:
-            image_name = caption.split("#")[0].strip()
-            caption_text = caption.split("\t")[1].strip()
+            image_name = caption.split('#')[0].strip()
+            caption_text = caption.split('\t')[1].strip()
             if image_name not in image_caption_dict:
                 image_caption_dict[image_name] = []
             image_caption_dict[image_name].append(START + caption_text + END)
-    return image_caption_dict
+    if (mode == "all"):
+        return image_caption_dict
+    else:
+        image_name_list = read_image_list(mode=mode,
+                                          data_dir=data_dir)
+        filtered_image_caption_list = {}
+        for image_name in image_name_list:
+            filtered_image_caption_list[image_name] = image_caption_dict[image_name]
+        return filtered_image_caption_list
 
 
 def read_image_list(mode="train",
@@ -45,7 +54,7 @@ def read_image_list(mode="train",
 
 
 def prepare_image_dataset(data_dir="/home/shagun/projects/Image-Caption-Generator/data/",
-                          mode_list=["train", "test", "overfit"]):
+                          mode_list=["train", "test", "debug"]):
     image_encoding_model = load_vgg16()
     for mode in mode_list:
         images = read_image_list(mode=mode,
@@ -58,5 +67,7 @@ def prepare_image_dataset(data_dir="/home/shagun/projects/Image-Caption-Generato
 
 
 if __name__ == "__main__":
-    image_caption_dict = read_captions(data_dir="/home/shagun/projects/Image-Caption-Generator/data/")
-    prepare_image_dataset(mode_list=["overfit"])
+    data_dir="/home/shagun/projects/Image-Caption-Generator/data/"
+    image_caption_dict = read_captions(data_dir=data_dir)
+    prepare_image_dataset(data_dir=data_dir,
+                          mode_list=["debug"])
