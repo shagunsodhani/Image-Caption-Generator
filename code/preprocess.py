@@ -6,6 +6,9 @@ from vgg16 import load_image, load_vgg16
 
 counter = 0
 
+START = "__START__ "
+END = " __END__"
+
 
 def encode_image(model, image,
                  data_dir="/home/shagun/projects/Image-Caption-Generator/data/"):
@@ -28,7 +31,7 @@ def read_captions(data_dir="/home/shagun/projects/Image-Caption-Generator/data/"
             caption_text = caption.split("\t")[1].strip()
             if image_name not in image_caption_dict:
                 image_caption_dict[image_name] = []
-            image_caption_dict[image_name].append(caption_text)
+            image_caption_dict[image_name].append(START + caption_text + END)
     return image_caption_dict
 
 
