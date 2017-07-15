@@ -13,7 +13,7 @@ END = " __END__"
 def encode_image(model, image,
                  data_dir="/home/shagun/projects/Image-Caption-Generator/data/"):
     '''Method to encode the given image'''
-    image_dir = data_dir + "images/"
+    image_dir = data_dir + "images_small/"
     prediction = model.predict(
         load_image(image_dir + str(image))
     )
@@ -38,38 +38,25 @@ def read_captions(data_dir="/home/shagun/projects/Image-Caption-Generator/data/"
 def read_image_list(mode="train",
                     data_dir="/home/shagun/projects/Image-Caption-Generator/data/"):
     '''Method to read the list of images'''
-    if (mode == "train"):
-        with open(data_dir + 'Flickr_8k.trainImages.txt', 'r') as train_images_file:
-            train_images = list(map(lambda x: x.strip(),
-                                    train_images_file.read().split('\n')))
-        return train_images
-    else:
-        with open(data_dir + 'Flickr_8k.testImages.txt', 'r') as test_images_file:
-            test_images = list(map(lambda x: x.strip(),
-                                   test_images_file.read().split('\n')))
-        return test_images
+    with open(data_dir + "Flickr_8k." + mode + "Images.txt", 'r') as images_file:
+        images = list(map(lambda x: x.strip(),
+                          images_file.read().split('\n')))
+    return images
 
 
-def prepare_image_dataset(data_dir="/home/shagun/projects/Image-Caption-Generator/data/"):
-    train_images = read_image_list(mode="train")
-    test_images = read_image_list(mode="test")
-
+def prepare_image_dataset(data_dir="/home/shagun/projects/Image-Caption-Generator/data/",
+                          mode_list=["train", "test", "overfit"]):
     image_encoding_model = load_vgg16()
-
-    image_encoding = {}
-    for image in train_images:
-        image_encoding[image] = encode_image(image_encoding_model, image)
-
-    with open(data_dir + "model/train_image_encoding.pkl", "wb") as image_encoding_file:
-        pickle.dump(image_encoding, image_encoding_file)
-
-    image_encoding = {}
-    for image in test_images:
-        image_encoding[image] = encode_image(image_encoding_model, image)
-
-    with open(data_dir + "model/test_image_encoding.pkl", "wb") as image_encoding_file:
-        pickle.dump(image_encoding, image_encoding_file)
+    for mode in mode_list:
+        images = read_image_list(mode=mode,
+                                 data_dir=data_dir)
+        image_encoding = {}
+        for image in images:
+            image_encoding[image] = encode_image(image_encoding_model, image)
+            with open(data_dir + "model/" + mode + "_image_encoding.pkl", "wb") as image_encoding_file:
+                pickle.dump(image_encoding, image_encoding_file)
 
 
 if __name__ == "__main__":
     image_caption_dict = read_captions(data_dir="/home/shagun/projects/Image-Caption-Generator/data/")
+    prepare_image_dataset(mode_list=["overfit"])
