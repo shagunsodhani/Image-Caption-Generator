@@ -61,7 +61,9 @@ def prepare_image_dataset(data_dir="/home/shagun/projects/Image-Caption-Generato
                                  data_dir=data_dir)
         image_encoding = {}
         for image in images:
-            image_encoding[image] = encode_image(image_encoding_model, image)
+            image_encoding[image] = encode_image(image_encoding_model,
+                                                 image,
+                                                 data_dir=data_dir)
             with open(data_dir + "model/" + mode + "_image_encoding.pkl", "wb") as image_encoding_file:
                 pickle.dump(image_encoding, image_encoding_file)
 

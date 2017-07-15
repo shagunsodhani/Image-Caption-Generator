@@ -8,12 +8,12 @@ from pipeline import generate_config, debug_generator
 def train(batch_size=128,
           epochs=100,
           data_dir="/home/shagun/projects/Image-Caption-Generator/data/",
-          weights_path=None):
+          weights_path=None,
+          mode="train"):
     '''Method to train the image caption generator
     weights_path is the path to the .h5 file where weights from the previous
     run are saved (if available)'''
 
-    mode = "debug"
     config_dict = generate_config(data_dir=data_dir,
                                   mode=mode)
     config_dict['batch_size'] = batch_size
@@ -24,18 +24,16 @@ def train(batch_size=128,
 
     model = create_model(config_dict=config_dict)
 
-    # print(model.summary())
-
     if weights_path:
         model.load_weights(weights_path)
 
-    file_name = data_dir + "/model/weights-{epoch:02d}.hdf5"
+    file_name = data_dir + "model/weights-{epoch:02d}.hdf5"
     checkpoint = ModelCheckpoint(filepath=file_name,
                                  monitor='loss',
                                  verbose=1,
                                  save_best_only=True,
                                  mode='min')
-    tensorboard = TensorBoard(log_dir='./logs',
+    tensorboard = TensorBoard(log_dir='../logs',
                               histogram_freq=0,
                               batch_size=batch_size,
                               write_graph=True,
@@ -58,4 +56,5 @@ if __name__ == '__main__':
     train(batch_size=8,
           epochs=100,
           data_dir="/home/shagun/projects/Image-Caption-Generator/data/",
-          weights_path=None)
+          weights_path=None,
+          mode="debug")

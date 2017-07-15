@@ -1,7 +1,7 @@
-from keras.layers import LSTM, Embedding, Dense, \
-    RepeatVector, TimeDistributed, Input
+from keras.layers import LSTM, Activation, Embedding, Dense, \
+    RepeatVector, TimeDistributed, Input, Merge
 from keras.layers import concatenate
-from keras.models import Model
+from keras.models import Sequential, Model
 
 
 def _create_image_model(config_dict,
@@ -47,19 +47,19 @@ def _create_language_model(config_dict,
     return outputs
 
 
-# def _create_merged_model(config_dict,
-#                          image_model,
-#                          language_model):
-#     print(image_model.summary())
-#     print(language_model.summary())
-#     model = Sequential()
-#     model.add(Merge([image_model, language_model], mode='concat'))
-#     model.add(LSTM(1000, return_sequences=False))
-#     model.add(Dense(units=config_dict['vocabulary_size']))
-#     model.add(Activation('softmax'))
-#
-#     print(model.summary())
-#     return model
+def _create_merged_model(config_dict,
+                         image_model,
+                         language_model):
+    print(image_model.summary())
+    print(language_model.summary())
+    model = Sequential()
+    model.add(Merge([image_model, language_model], mode='concat'))
+    model.add(LSTM(1000, return_sequences=False))
+    model.add(Dense(units=config_dict['vocabulary_size']))
+    model.add(Activation('softmax'))
+
+    print(model.summary())
+    return model
 
 
 def create_model(config_dict,
