@@ -10,47 +10,53 @@ from preprocess import read_captions, read_image_list
 def _get_captions_text():
     '''Method to return a list of all the caption texts'''
     image_captions_dict = read_captions()
-    texts = []
+    captions = []
     for key_value in image_captions_dict.items():
         for caption in key_value[1]:
-            texts.append(caption)
-    return texts
+            captions.append(caption)
+    return captions
 
 
 def generate_config():
     '''Method to generate the config dict based on caption data'''
     config_dict = {
         'embedding_dim': 128,
-        'vocabulary_size': 0,
-        'max_caption_length': 0
+        'vocabulary_size': -1,
+        'max_caption_length': -1,
+        'batch_size': 100,
+        'total_number_of_examples': -1
     }
-    texts = _get_captions_text()
+    captions = _get_captions_text()
 
     max_caption_length = max(list(
-        map(lambda caption: len(caption.split(' ')), texts)
+        map(lambda caption: len(caption.split(' ')), captions)
     ))
     config_dict['max_caption_length'] = max_caption_length
     token_set = set()
-    for caption in texts:
+    for caption in captions:
         for word in caption.split(' '):
             token_set.add(word)
     vocabulary_size = len(token_set)
     config_dict['vocabulary_size'] = vocabulary_size
     print("Vocabulary size = ", vocabulary_size)
     print("Maximum Caption Length = ", max_caption_length)
+    total_number_of_examples = 0
+    for caption in captions:
+        total_number_of_examples += len(caption.split(' ')) - 1
+    print("Total Number of Examples = ", total_number_of_examples)
     return config_dict
 
 
-def train_generator(config_dict, batch_size, data_dir):
+def train_generator(config_dict, data_dir):
     '''Method to prepare the training datat for feeding into the model'''
     return data_generator(config_dict=config_dict,
-                          batch_size=batch_size,
                           data_dir=data_dir,
                           mode="train")
 
 
-def data_generator(config_dict, batch_size, data_dir, mode):
+def data_generator(config_dict, data_dir, mode):
     '''Method to prepare the data for feeding into the model'''
+    batch_size = config_dict['batch_size']
     tokenizer = Tokenizer(num_words=config_dict['vocabulary_size'])
     texts = _get_captions_text()
     tokenizer.fit_on_texts(texts=texts)
