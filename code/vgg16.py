@@ -1,3 +1,5 @@
+import pickle
+
 import numpy as np
 from tensorflow.contrib.keras.api.keras.applications.vgg16 import VGG16, preprocess_input
 from tensorflow.contrib.keras.api.keras.models import Model
@@ -27,6 +29,15 @@ def load_image(path):
 
 if __name__ == "__main__":
     model = load_vgg16()
-    img_path = 'elephant.jpg'
+    img_path = "test/1.jpg"
+    embedding_path = "test/correct_vgg_embedding_1.pkl"
     x = load_image(img_path)
-    print(model.predict(x))
+    correct_vgg_embedding = model.predict(x)
+    # with open(embedding_path, "wb") as f:
+    #     pickle.dump(correct_vgg_embedding, f)
+    correct_vgg_embedding = pickle.load(open(embedding_path, "rb"))
+    predicted_vgg_embedding = model.predict(x)
+    if (np.allclose(correct_vgg_embedding, predicted_vgg_embedding)):
+        print("VGG16 model successfully downloaded.")
+    else:
+        print("Error: VGG16 model not downloaded.")
