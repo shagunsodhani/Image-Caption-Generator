@@ -73,10 +73,14 @@ def create_model(config_dict,
     language_model = _create_language_model(config_dict=config_dict,
                                             language_inputs=language_inputs)
 
-    merged_input = concatenate([image_model, language_model])
-    merged_input = LSTM(1000, return_sequences=False)(merged_input)
+    merged_input = concatenate([image_model, language_model],
+                               name="concatenate_image_language")
+    merged_input = LSTM(1000,
+                        return_sequences=False,
+                        name="merged_model_lstm")(merged_input)
     softmax_output = Dense(units=config_dict["vocabulary_size"],
-                           activation="softmax")(merged_input)
+                           activation="softmax",
+                           name="merged_model_softmax")(merged_input)
     model = Model(inputs=[image_inputs,
                           language_inputs], outputs=softmax_output)
     print(model.summary())
