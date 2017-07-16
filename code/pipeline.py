@@ -75,13 +75,24 @@ def debug_generator(config_dict, data_dir):
                           mode="debug")
 
 
+def get_tokenizer(config_dict, data_dir):
+    '''Method to obtain the tokenizer'''
+    tokenizer = Tokenizer(num_words=config_dict["vocabulary_size"])
+    texts = _get_captions_text(data_dir=data_dir,
+                               mode="all")
+    tokenizer.fit_on_texts(texts=texts)
+    return tokenizer
+
+
 def data_generator(config_dict, data_dir, mode):
     '''Method to prepare the data for feeding into the model'''
     batch_size = config_dict["batch_size"]
-    tokenizer = Tokenizer(num_words=config_dict["vocabulary_size"])
-    texts = _get_captions_text(data_dir=data_dir,
-                               mode=mode)
-    tokenizer.fit_on_texts(texts=texts)
+    # tokenizer = Tokenizer(num_words=config_dict["vocabulary_size"])
+    # texts = _get_captions_text(data_dir=data_dir,
+    #                            mode=mode)
+    # tokenizer.fit_on_texts(texts=texts)
+    tokenizer = get_tokenizer(config_dict=config_dict,
+                              data_dir=data_dir)
 
     image_list = read_image_list(mode=mode, data_dir=data_dir)
     image_encoding_dict = pickle.load(
