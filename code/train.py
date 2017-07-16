@@ -19,6 +19,7 @@ def train(batch_size=128,
     config_dict['batch_size'] = batch_size
     steps_per_epoch = config_dict["total_number_of_examples"] // batch_size
 
+    print("steps_per_epoch = ", steps_per_epoch)
     train_data_generator = debug_generator(config_dict=config_dict,
                                            data_dir=data_dir)
 
@@ -57,4 +58,4 @@ if __name__ == '__main__':
           epochs=100,
           data_dir="/home/shagun/projects/Image-Caption-Generator/data/",
           weights_path=None,
-          mode="debug")
+          mode="train")

@@ -30,7 +30,7 @@ def generate_config(data_dir="/home/shagun/projects/Image-Caption-Generator/data
         "total_number_of_examples": -1
     }
     captions = _get_captions_text(data_dir=data_dir,
-                                  mode=mode)
+                                  mode="all")
 
     max_caption_length = max(list(
         map(lambda caption: len(caption.split(' ')), captions)
@@ -45,6 +45,8 @@ def generate_config(data_dir="/home/shagun/projects/Image-Caption-Generator/data
     print("Vocabulary size = ", vocabulary_size)
     print("Maximum Caption Length = ", max_caption_length)
     total_number_of_examples = 0
+    captions = _get_captions_text(data_dir=data_dir,
+                                  mode=mode)
     for caption in captions:
         total_number_of_examples += len(caption.split(' ')) - 1
     config_dict["total_number_of_examples"] = total_number_of_examples
