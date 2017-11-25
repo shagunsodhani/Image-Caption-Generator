@@ -105,3 +105,4 @@ ENV/
 logs/*
 data/images/*
 data/model/*
+!data/model/.gitkeep
